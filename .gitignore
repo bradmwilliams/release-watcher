@@ -1,0 +1,6 @@
+release-watcher
+.idea/
+
+coverage.out
+golangci-lint.out
+report.json
