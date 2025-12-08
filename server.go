@@ -6,13 +6,11 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"math/rand"
 	"net/http"
 	"os"
 	"strconv"
 	"strings"
 	"sync"
-	"time"
 
 	"k8s.io/klog"
 )
@@ -59,7 +57,6 @@ type PostMessageResponse struct {
 }
 
 func (o *options) serve() {
-	rand.Seed(time.Now().UTC().UnixNano())
 	authToken = os.Getenv("TOKEN")
 	http.HandleFunc("/", o.createHandler())  // set router
 	err := http.ListenAndServe(":8080", nil) // set listen port
@@ -89,7 +86,7 @@ func (o *options) createHandler() http.HandlerFunc {
 			w.Header().Set("Content-type", "application/json")
 			w.WriteHeader(http.StatusOK)
 			respJson, _ := json.Marshal(resp)
-			io.WriteString(w, string(respJson))
+			_, _ = w.Write(respJson)
 			return
 		}
 
@@ -145,8 +142,8 @@ Current settings/defaults:
 						case "min":
 							i, err := strconv.Atoi(v[1])
 							if err != nil {
-								err = fmt.Errorf("Error parsing min z-stream version value %q: %w", v[1], err)
-								sendMessage(err.Error(), req.Event.Channel, thread)
+								err = fmt.Errorf("error parsing min z-stream version value %q: %w", v[1], err)
+								_, _ = sendMessage(err.Error(), req.Event.Channel, thread)
 								http.Error(w, err.Error(), http.StatusInternalServerError)
 								return
 							}
@@ -155,8 +152,8 @@ Current settings/defaults:
 						case "max":
 							i, err := strconv.Atoi(v[1])
 							if err != nil {
-								err = fmt.Errorf("Error parsing max z-stream version value %q: %w", v[1], err)
-								sendMessage(err.Error(), req.Event.Channel, thread)
+								err = fmt.Errorf("error parsing max z-stream version value %q: %w", v[1], err)
+								_, _ = sendMessage(err.Error(), req.Event.Channel, thread)
 								http.Error(w, err.Error(), http.StatusInternalServerError)
 								return
 							}

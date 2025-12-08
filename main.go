@@ -71,9 +71,12 @@ func main() {
 
 	original := flag.CommandLine
 	klog.InitFlags(original)
-	original.Set("alsologtostderr", "true")
-	original.Set("v", "2")
-
+	if err := original.Set("alsologtostderr", "true"); err != nil {
+		klog.Fatalf("Failed to set `alsologtostderr`: %v", err)
+	}
+	if err := original.Set("v", "2"); err != nil {
+		klog.Fatalf("Failed to set verbosity to 2: %v", err)
+	}
 	root.PersistentFlags().AddGoFlag(original.Lookup("v"))
 	if err := root.Execute(); err != nil {
 		klog.Exitf("error: %v", err)
