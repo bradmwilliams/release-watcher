@@ -1,7 +1,10 @@
 all: build
 .PHONY: all
 
+SOURCE_GIT_TAG=v1.0.0+$(shell git rev-parse --short=7 HEAD)
+
 GO_BUILD_PACKAGES=.
+GOLINT=golangci-lint run
 
 # Include the library makefile
 include $(addprefix ./vendor/github.com/openshift/build-machinery-go/make/, \
