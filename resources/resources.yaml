@@ -1,3 +1,9 @@
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+  name: release-watcher
+  namespace: ci
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -19,19 +25,19 @@ spec:
       labels:
         component: release-watcher
     spec:
+      serviceAccountName: release-watcher
       containers:
       - env:
         - name: TOKEN
           valueFrom:
             secretKeyRef:
               key: TOKEN
-              name: bot-token
-              optional: true
+              name: release-watcher-bot-token
         image: quay-proxy.ci.openshift.org/openshift/ci:ci_release-watcher_latest
         imagePullPolicy: Always
         name: release-watcher
         command:
-        - /release-watcher
+        - release-watcher
         args:
         - bot
 ---
@@ -65,4 +71,3 @@ spec:
   to:
     kind: Service
     name: release-watcher
-
